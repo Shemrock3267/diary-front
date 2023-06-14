@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 
 import PostHead from '../components/PostHead';
 import PostForm from '../components/PostForm';
+import { usePostsContext } from '../hooks/usePostsContext';
 import css from '../styles/styles.module.scss';
 
 const Home = () => {
-  const [posts, setPosts] = useState(null);
+  const { posts, dispatch } = usePostsContext();
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -13,13 +14,13 @@ const Home = () => {
         const response = await fetch('http://localhost:4000/api/posts');
         const json = await response.json();
 
-        if (response.ok) setPosts(json);
+        if (response.ok) dispatch({ type: 'SET_POSTS', payload: json });
       } catch (err) {
         console.error(err.message || 'There was an error fetching posts');
       }
     };
     fetchPosts();
-  }, []);
+  }, [dispatch]);
 
   return (
     <>
@@ -28,12 +29,14 @@ const Home = () => {
         <h1>Posts</h1>
         <ul className={css.postList}>
           {posts &&
-            posts.map(post => <PostHead key={post._id} post={post} />)}
+            posts.map((post) => <PostHead key={post._id} post={post} />)}
         </ul>
       </div>
 
       {/* Edit selected Post */}
-      <div><PostForm /></div>
+      <div>
+        <PostForm />
+      </div>
     </>
   );
 };

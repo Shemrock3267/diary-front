@@ -1,4 +1,5 @@
 import { useForm } from 'react-hook-form';
+import { usePostsContext } from '../hooks/usePostsContext';
 
 import css from '../styles/styles.module.scss';
 
@@ -10,6 +11,8 @@ const PostForm = () => {
     reset,
     formState: { errors },
   } = useForm();
+
+  const { dispatch } = usePostsContext();
 
   const onSubmitHandler = async (data) => {
     const post = {
@@ -34,6 +37,7 @@ const PostForm = () => {
 
       if (response.ok) {
         reset({ title: '', date: '', content: '' });
+        dispatch({ type: 'CREATE_POST', payload: newPost });
         console.log('New post created: ', newPost);
       }
     } catch (err) {
@@ -49,27 +53,27 @@ const PostForm = () => {
         </div>
 
         <input
-          type="text"
-          placeholder="Title"
+          type='text'
+          placeholder='Title'
           {...register('title', { required: 'required field' })}
         />
         <p>{errors.title?.message}</p>
 
         <input
-          type="date"
+          type='date'
           {...register('date', { required: 'required field' })}
         />
         <p>{errors.date?.message}</p>
 
         <textarea
-          rows="25"
+          rows='25'
           className={css.content}
           {...register('content', { required: 'required field' })}
-          placeholder="enter diary content"
+          placeholder='enter diary content'
         />
         <p>{errors.content?.message}</p>
 
-        <button type="submit" value="submit">
+        <button type='submit' value='submit'>
           POST
         </button>
       </form>

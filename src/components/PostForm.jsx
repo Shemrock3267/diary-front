@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { usePostsContext } from '../hooks/usePostsContext';
+import { useAuthContext } from '../hooks/useAuthContext';
 
 import css from '../styles/styles.module.scss';
 
@@ -13,6 +14,7 @@ const PostForm = () => {
   } = useForm();
 
   const { dispatch } = usePostsContext();
+  const { user } = useAuthContext();
 
   const onSubmitHandler = async (data) => {
     const post = {
@@ -27,6 +29,7 @@ const PostForm = () => {
         body: JSON.stringify(post),
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
         },
       });
 

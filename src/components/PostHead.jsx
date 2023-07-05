@@ -3,16 +3,21 @@ import { format } from 'date-fns';
 
 import { usePostsContext } from '../hooks/usePostsContext';
 import css from '../styles/styles.module.scss';
+import { useAuthContext } from '../hooks/useAuthContext';
 
 const PostHead = ({ post }) => {
   const { title, date } = post;
   const { dispatch } = usePostsContext();
+  const { user } = useAuthContext();
   const handleDeletePost = async () => {
     try {
       const response = await fetch(
         `http://localhost:4000/api/posts/${post._id}`,
         {
           method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
         }
       );
 
@@ -21,7 +26,6 @@ const PostHead = ({ post }) => {
 
       if (response.ok) {
         dispatch({ type: 'DELETE_POST', payload: json });
-        console.log('Post deleted', json);
       }
     } catch (err) {
       console.log(err.message || 'Error: failed to delete post');

@@ -3,15 +3,21 @@ import { useEffect } from 'react';
 import PostHead from '../components/PostHead';
 import PostForm from '../components/PostForm';
 import { usePostsContext } from '../hooks/usePostsContext';
+import { useAuthContext } from '../hooks/useAuthContext';
 import css from '../styles/styles.module.scss';
 
 const Home = () => {
   const { posts, dispatch } = usePostsContext();
+  const { user } = useAuthContext();
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/posts');
+        const response = await fetch('http://localhost:4000/api/posts', {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        });
         const json = await response.json();
 
         if (response.ok) dispatch({ type: 'SET_POSTS', payload: json });
@@ -19,8 +25,8 @@ const Home = () => {
         console.error(err.message || 'There was an error fetching posts');
       }
     };
-    fetchPosts();
-  }, [dispatch]);
+    user && fetchPosts();
+  }, [dispatch, user]);
 
   return (
     <>
